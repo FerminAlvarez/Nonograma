@@ -46,9 +46,9 @@ put(Contenido, [RowN, ColN], PistasFilas, PistasColumnas, Grilla, NewGrilla, Sat
 
   	getClue(RowN, PistasFilas, ClueRow),
 
- 	getRow(NewGrilla,RowN,Row),
+ 	getRow(NewGrilla,RowN,RowOut),
 
- 	checkClue(Row, ClueRow, SatisfiedRow).
+ 	checkClue(RowOut, ClueRow, SatisfiedRow).
 
 
 
