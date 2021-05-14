@@ -1,0 +1,131 @@
+body {
+  font: 14px "Century Gothic", Futura, sans-serif;
+  margin: 20px;
+}
+
+.square {
+  background: #fff;
+  border: 1px solid #999;
+  font-size: 24px;
+  font-weight: bold;
+  margin-right: -1px;
+  margin-top: -1px;
+  padding: 0;
+  text-align: center;
+}
+
+.square:focus {
+  outline: none;
+}
+
+.board {
+  display: grid;
+}
+
+.horizontal {
+  display: flex;
+}
+
+.vertical {
+  display: flex;
+  flex-direction: column;
+}
+
+.rowClues {
+  display: grid;
+}
+
+.colClues {
+  display: grid;
+}
+
+.clue {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #b9d6e0;
+  border-radius: 8px;
+  margin: 5px;
+}
+
+/* Optimizar */
+.clue-wrong {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background:crimson;
+  border-radius: 8px;
+  margin: 5px;
+}
+
+/* Optimizar */
+.clue-satisfied {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: greenyellow;
+  border-radius: 8px;
+  margin: 5px;
+}
+
+.clue div {
+  margin: 2px
+}
+
+.colClues .clue {
+  flex-direction: column;
+}
+
+.game {
+  display: flex;
+  flex-direction: row;
+}
+
+.gameInfo {
+  margin-left: 20px;
+}
+
+
+.buttonX,.buttonVoid {
+  display: inline-block;
+  padding: 15px 25px;
+  font-size: 24px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  outline: none;
+  color: #fff;
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 9px #999;
+  width: 50%;
+  margin-top:10px;
+}
+
+
+.buttonX {
+  background-color: #4CAF50;
+}
+.buttonX:active {
+  background-color: #3e8e41;
+  box-shadow: 0 5px #666;
+  transform: translateY(4px);
+}
+
+.buttonX:hover {
+  background-color: #3e8e41
+  
+}
+
+
+.buttonVoid{
+  background-color: brown;
+}
+.buttonVoid:hover {
+  background-color: maroon;
+}
+.buttonVoid:active {
+  background-color: maroon;
+  box-shadow: 0 5px #666;
+  transform: translateY(4px);
+}
