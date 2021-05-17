@@ -34,40 +34,36 @@ class Game extends React.Component {
           colClues: response['PistasColumnas'],
         });
 
-        checkInit(Grilla, LengthRow, LengthCol, RowClue, ColClue, RowChecked, ColChecked):-
-        const checkInit = 'checkInit('+response['Grilla']+','
+
+
+        const grid = JSON.stringify(this.state.grid);
+        const rowClues = JSON.stringify(this.state.rowClues);
+        const colClues = JSON.stringify(this.state.colClues);
+      
+        const checkInit = 'checkInit('+grid+','
         +response['PistasFilas'].length
-        +','+response['PistasColumnas'].length+','+response['PistasFilas']+','+response['PistasColumnas']+')';
+        +','+response['PistasColumnas'].length+','+rowClues+','+colClues+',RowChecked,ColChecked)';
+
+        console.log(checkInit);
 
 
-
-        this.pengine.query(checkInit, (success2, response) => {
+        this.pengine.query(checkInit, (success2, response2) => {
           if (success2) {
+            console.log(response2);
+            var rowStatesInit = new Array(response2['RowChecked'].length);
+            for(var i = 0; i <rowStatesInit.length; i++){
+              rowStatesInit[i] = response2['RowChecked'][i] === 1 ? true : false;
+            }
+            var colStatesInit = new Array(response2['ColChecked'].length);
+            for(i = 0; i <colStatesInit.length; i++){
+              colStatesInit[i] = response2['ColChecked'][i] === 1 ? true : false;
+            }
             this.setState({
-              grid: response['Grilla'],
-              rowClues: response['PistasFilas'],
-              colClues: response['PistasColumnas'],
+              rowStates: rowStatesInit,
+              colStates: colStatesInit,
             });
           }
           });
-            
-        
-
-
-
-        var rowStatesInit = new Array(response['PistasFilas'].length);
-        console.log(rowStatesInit.length);
-        for(var i = 0; i <rowStatesInit.length; i++){
-          rowStatesInit[i] = false;
-        }
-        var colStatesInit = new Array(response['PistasColumnas'].length);
-        for(i = 0; i <colStatesInit.length; i++){
-          colStatesInit[i]  = false;
-        }
-        this.setState({
-          rowStates: rowStatesInit,
-          colStates: colStatesInit,
-        });
       }
     });
   }
