@@ -3,15 +3,15 @@ import Square from './Square';
 import Clue from './Clue';
 
 class Board extends React.Component {
-    
     render() {
         const numOfRows = this.props.grid.length;
         const numOfCols = this.props.grid[0].length;
 
         const rowClues = this.props.rowClues;
         const colClues = this.props.colClues;
-        
 
+        const rowStates = this.props.rowStates;
+        const colStates = this.props.colStates;
         return (
             <div className="vertical">
                 <div
@@ -30,7 +30,11 @@ class Board extends React.Component {
                 >
                     <div>{/* top-left corner square */}</div>
                     {colClues.map((clue, i) =>
-                        <Clue clue={clue} key={i}/>
+                        <Clue 
+                        clue={clue} 
+                        key={i}
+                        satisfied={colStates[i]}
+                        />
                     )}
                 </div>
                 <div className="horizontal">
@@ -43,7 +47,11 @@ class Board extends React.Component {
                         }}
                     >
                         {rowClues.map((clue, i) =>
-                            <Clue clue={clue} key={i}/>
+                            <Clue 
+                            clue={clue} 
+                            key={i}
+                            satisfied={rowStates[i]}
+                            />
                         )}
 
                     </div>
@@ -62,13 +70,11 @@ class Board extends React.Component {
                             )
                         )}
                     </div>
-                </div>
-                
-                
+                </div>   
             </div>
-
+            
         );
-    }
-    
+        
+    }    
 }
 export default Board;
