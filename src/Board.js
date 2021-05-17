@@ -18,7 +18,7 @@ class Board extends React.Component {
                     className="colClues"
                     style={{
                         gridTemplateRows: '90px',
-                        gridTemplateColumns: '90px repeat(' + numOfCols + ', 90px)'
+                        gridTemplateColumns: '85px repeat(' + numOfCols + ', 90px)'
                         /*
                            60px  40px 40px 40px 40px 40px 40px 40px   (gridTemplateColumns)
                           ______ ____ ____ ____ ____ ____ ____ ____

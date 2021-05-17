@@ -6,18 +6,31 @@ body {
   top: 50%;
   -webkit-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
+  background-image: url(./assets/8.jpg);
 }
 
-.square {
+.square, .square-void {
   background: lavender;
   border: 1px solid #fff;
-  font-size: 24px;
+  font-size: 40px;
   font-weight: bold;
-  margin-right: -1px;
-  margin-top: -1px;
+  margin-right: 8px;
+  margin-top: 8px;
   padding: 0;
   text-align: center;
   border-radius: 17%;
+  transition: background .6s;box-shadow: 0 1px 2px rgba(0,0,0,0.07), 
+  0 2px 4px rgba(0,0,0,0.07), 
+  0 4px 8px rgba(0,0,0,0.07), 
+  0 8px 16px rgba(0,0,0,0.07),
+  0 16px 32px rgba(0,0,0,0.07), 
+  0 32px 64px rgba(0,0,0,0.07);
+
+  
+}
+.square-void {
+  background:#888;
+  color: transparent; 
 }
 
 .square:focus {
@@ -47,13 +60,20 @@ body {
 }
 
 .clue, .clue-sat {
+  font: 20px "Century Gothic", Futura, sans-serif;
   display: flex;
   justify-content: center;
   align-items: center;
   background: beige;
   border-radius: 8px;
-  margin: 5px;
+  margin: 7px;
   transition: all .4s;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.07), 
+              0 2px 4px rgba(0,0,0,0.07), 
+              0 4px 8px rgba(0,0,0,0.07), 
+              0 8px 16px rgba(0,0,0,0.07),
+              0 16px 32px rgba(0,0,0,0.07), 
+              0 32px 64px rgba(0,0,0,0.07);
 }
 
 .clue-sat {
@@ -76,6 +96,9 @@ body {
 .gameInfo {
   text-align: center;
   align-items: center;
+  font: 54px "Century Gothic", Futura, sans-serif;
+  transition: all .4s;
+
 }
 
 
@@ -87,9 +110,23 @@ body {
 
 
 
-
-
-
+Switch starts here
+html {
+  box-sizing: border-box;
+  font-family: 'Arial', sans-serif;
+  font-size: 100%;
+}
+*, *:before, *:after {
+  box-sizing: inherit;
+  margin:0;
+  padding:0;
+}
+.mid {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top:1em;
+}
 
 
 /* Switch starts here */

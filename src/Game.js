@@ -34,29 +34,23 @@ class Game extends React.Component {
           colClues: response['PistasColumnas'],
         });
 
-
-
+        
         const grid = JSON.stringify(this.state.grid);
         const rowClues = JSON.stringify(this.state.rowClues);
         const colClues = JSON.stringify(this.state.colClues);
       
-        const checkInit = 'checkInit('+grid+','
-        +response['PistasFilas'].length
-        +','+response['PistasColumnas'].length+','+rowClues+','+colClues+',RowChecked,ColChecked)';
 
-        console.log(checkInit);
-
-
-        this.pengine.query(checkInit, (success2, response2) => {
-          if (success2) {
-            console.log(response2);
-            var rowStatesInit = new Array(response2['RowChecked'].length);
+        // Realizamos el chequeo inicial de las pistas.
+        const checkInit = 'checkInit('+grid+','+response['PistasFilas'].length+','+response['PistasColumnas'].length+','+rowClues+','+colClues+',RowChecked,ColChecked)';
+        this.pengine.query(checkInit, (successCheck, responseCheck) => {
+          if (successCheck) {
+            var rowStatesInit = new Array(responseCheck['RowChecked'].length);
             for(var i = 0; i <rowStatesInit.length; i++){
-              rowStatesInit[i] = response2['RowChecked'][i] === 1 ? true : false;
+              rowStatesInit[i] = responseCheck['RowChecked'][i] === 1 ? true : false;
             }
-            var colStatesInit = new Array(response2['ColChecked'].length);
+            var colStatesInit = new Array(responseCheck['ColChecked'].length);
             for(i = 0; i <colStatesInit.length; i++){
-              colStatesInit[i] = response2['ColChecked'][i] === 1 ? true : false;
+              colStatesInit[i] = responseCheck['ColChecked'][i] === 1 ? true : false;
             }
             this.setState({
               rowStates: rowStatesInit,
@@ -82,11 +76,7 @@ class Game extends React.Component {
     const contenido = JSON.stringify(this.state.contenido);
     
     const queryS = 'put(' + contenido + ', [' + i + ',' + j + ']' + ',' + rowClues + ',' + colClues+ ',' + squaresS + ', GrillaRes, FilaSat, ColSat)';
-    
-
-    
-
-
+    console.log(queryS);
     this.setState({
       waiting: true
     });
@@ -124,7 +114,6 @@ class Game extends React.Component {
    
     return (
         <div className="game">
-          
         <table>
           <tr>
           <Board
@@ -139,14 +128,14 @@ class Game extends React.Component {
           <tr>
             <div className="gameInfo">
               {statusText}
+            </div>
             <div class="mid">
-                <label class="rocker rocker-small">
+                <label class="rocker">
                   <input type="checkbox" onClick={this.changeMode}></input>
                   <span class="switch-left">#</span>
                   <span class="switch-right">X</span>
                 </label>
-          </div>
-          </div>
+            </div>
           </tr>
         </table>
         </div>
