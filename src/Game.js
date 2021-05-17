@@ -22,10 +22,7 @@ class Game extends React.Component {
     this.handlePengineCreate = this.handlePengineCreate.bind(this);
     this.pengine = new PengineClient(this.handlePengineCreate);
     this.changeMode = this.changeMode.bind(this);
-  }
-
-  // Preguntar si arranca bien ...
-  
+  }  
   
   handlePengineCreate() {
     const queryS = 'init(PistasFilas, PistasColumnas, Grilla)';
@@ -37,6 +34,27 @@ class Game extends React.Component {
           colClues: response['PistasColumnas'],
         });
 
+        checkInit(Grilla, LengthRow, LengthCol, RowClue, ColClue, RowChecked, ColChecked):-
+        const checkInit = 'checkInit('+response['Grilla']+','
+        +response['PistasFilas'].length
+        +','+response['PistasColumnas'].length+','+response['PistasFilas']+','+response['PistasColumnas']+')';
+
+
+
+        this.pengine.query(checkInit, (success2, response) => {
+          if (success2) {
+            this.setState({
+              grid: response['Grilla'],
+              rowClues: response['PistasFilas'],
+              colClues: response['PistasColumnas'],
+            });
+          }
+          });
+            
+        
+
+
+
         var rowStatesInit = new Array(response['PistasFilas'].length);
         console.log(rowStatesInit.length);
         for(var i = 0; i <rowStatesInit.length; i++){
@@ -46,17 +64,11 @@ class Game extends React.Component {
         for(i = 0; i <colStatesInit.length; i++){
           colStatesInit[i]  = false;
         }
-
         this.setState({
           rowStates: rowStatesInit,
           colStates: colStatesInit,
-
         });
-
       }
-
-
-      
     });
   }
 
@@ -74,6 +86,9 @@ class Game extends React.Component {
     const contenido = JSON.stringify(this.state.contenido);
     
     const queryS = 'put(' + contenido + ', [' + i + ',' + j + ']' + ',' + rowClues + ',' + colClues+ ',' + squaresS + ', GrillaRes, FilaSat, ColSat)';
+    
+
+    
 
 
     this.setState({
@@ -112,27 +127,33 @@ class Game extends React.Component {
     const statusText = this.state.finish ? 'Congrats bro' : 'Keep playing!';
    
     return (
-      <div className="game">
-        <Board
-          grid={this.state.grid}
-          rowClues={this.state.rowClues}
-          colClues={this.state.colClues}
-          onClick={(i, j) => this.handleClick(i,j)}
-          rowStates = {this.state.rowStates}
-          colStates = {this.state.colStates}
-        />
-        <div className="gameInfo">
-          {statusText}
-          <div class="mid">
-            <label class="rocker rocker-small">
-              <input type="checkbox" onClick={this.changeMode}></input>
-              <span class="switch-left">#</span>
-              <span class="switch-right">X</span>
-            </label>
+        <div className="game">
+          
+        <table>
+          <tr>
+          <Board
+            grid={this.state.grid}
+            rowClues={this.state.rowClues}
+            colClues={this.state.colClues}
+            onClick={(i, j) => this.handleClick(i,j)}
+            rowStates = {this.state.rowStates}
+            colStates = {this.state.colStates}
+          />
+          </tr>
+          <tr>
+            <div className="gameInfo">
+              {statusText}
+            <div class="mid">
+                <label class="rocker rocker-small">
+                  <input type="checkbox" onClick={this.changeMode}></input>
+                  <span class="switch-left">#</span>
+                  <span class="switch-right">X</span>
+                </label>
+          </div>
+          </div>
+          </tr>
+        </table>
         </div>
-        </div>
-        
-      </div>
     );
     
   }
@@ -161,11 +182,6 @@ class Game extends React.Component {
       colSat  = this.state.colStates[indexCol];
       indexCol++;
     }
-
-
-    console.log("satisface row:" + rowSat + "col:" + colSat);
-
-
     this.setState({
       finish: colSat && rowSat,
     });

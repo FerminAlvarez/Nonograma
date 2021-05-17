@@ -17,8 +17,8 @@ class Board extends React.Component {
                 <div
                     className="colClues"
                     style={{
-                        gridTemplateRows: '60px',
-                        gridTemplateColumns: '60px repeat(' + numOfCols + ', 40px)'
+                        gridTemplateRows: '90px',
+                        gridTemplateColumns: '90px repeat(' + numOfCols + ', 90px)'
                         /*
                            60px  40px 40px 40px 40px 40px 40px 40px   (gridTemplateColumns)
                           ______ ____ ____ ____ ____ ____ ____ ____
@@ -41,8 +41,8 @@ class Board extends React.Component {
                     <div
                         className="rowClues"
                         style={{
-                            gridTemplateRows: 'repeat(' + numOfRows + ', 40px)',
-                            gridTemplateColumns: '60px'
+                            gridTemplateRows: 'repeat(' + numOfRows + ', 90px)',
+                            gridTemplateColumns: '90px'
                             /* IDEM column clues above */
                         }}
                     >
@@ -57,8 +57,8 @@ class Board extends React.Component {
                     </div>
                     <div className="board"
                         style={{
-                            gridTemplateRows: 'repeat(' + numOfRows + ', 40px)',
-                            gridTemplateColumns: 'repeat(' + numOfCols + ', 40px)'
+                            gridTemplateRows: 'repeat(' + numOfRows + ', 90px)',
+                            gridTemplateColumns: 'repeat(' + numOfCols + ', 90px)'
                         }}>
                         {this.props.grid.map((row, i) =>
                             row.map((cell, j) =>

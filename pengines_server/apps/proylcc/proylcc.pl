@@ -38,11 +38,11 @@ put(Contenido, [RowN, ColN], PistasFilas, PistasColumnas, Grilla, NewGrilla, Sat
 	replace(_Cell, ColN, Contenido, Row, NewRow)),
 
 
-    getCol(NewGrilla,ColN,Col),
+    getCol(NewGrilla,ColN,ColOut),
 	
   	getClue(ColN, PistasColumnas, ClueCol),
 
-  	checkClue(Col, ClueCol, SatisfiedCol),
+  	checkClue(ColOut, ClueCol, SatisfiedCol),
 
   	getClue(RowN, PistasFilas, ClueRow),
 
@@ -51,12 +51,8 @@ put(Contenido, [RowN, ColN], PistasFilas, PistasColumnas, Grilla, NewGrilla, Sat
  	checkClue(RowOut, ClueRow, SatisfiedRow).
 
 
-
-
-
-
 isVoid(Elem):- not(ground(Elem)) , !.
-isVoid("#").
+isVoid("X").
 
 getClue(Index, Clue, RES):- nth0(Index, Clue, RES).
 
@@ -65,26 +61,49 @@ getCol([L1|Ls],ColN, [Elemento|Columna]):- nth0(ColN, L1, Elemento), getCol(Ls,C
 
 getRow(Grilla,RowN,RES):- nth0(RowN, Grilla, RES).
 
+
 checkClue([Elem],[0],1):- isVoid(Elem).
 checkClue([],[0],1).
 checkClue([Elem|Sublist],Clue,RES):- isVoid(Elem) , checkClue(Sublist,Clue,RES).
-checkClue([Elem|Sublist],Clue,RES):- Elem == "X" , checkClueAux([Elem|Sublist],Clue,RES).
+checkClue([Elem|Sublist],Clue,RES):- Elem == "#" , checkClueAux([Elem|Sublist],[Clue],RES).
 
-
-
+checkClue(_,_,0).
 
 
 %Caso base, si el elemento de la fila/columna es # o no está definida y no se necesitan mas "X", es 1
 checkClueAux([Elem],[0],1):- isVoid(Elem).
 checkClueAux([],[0],1).
-
 %Si el primer elemento de la fila/columna es X, llamamos con un valor de pista menos
-checkClueAux([Elem|Sublist],[Clue|Ppost],RES):- Elem == "X", P is (Clue-1), checkClueAux(Sublist,[P|Ppost],RES),!.
+checkClueAux([Elem|Sublist],[Clue|Ppost],RES):- Elem == "#", P is (Clue-1), checkClueAux(Sublist,[P|Ppost],RES),!.
 %Si el elemento de la fila/columna es # o _, y el arreglo de pistas es 0, significa que se completo en un caso de [1,2] el [1] 
 checkClueAux([Elem|Sublist],[Clue|P],RES):- isVoid(Elem), Clue is 0, checkClueAux(Sublist,P,RES).
 %Sino si el elemento de la fila/columna es # o _ y la lista de pistas ya está vacía llamo recursivamente.
 checkClueAux([Elem|Sublist],[],RES):- isVoid(Elem), checkClueAux(Sublist,[0],RES).
 
-
 checkClueAux(_,_,0).
-checkClue(_,_,0).
+
+
+
+
+
+checkInit(Grilla, LengthRow, LengthCol, RowClue, ColClue, RowChecked, ColChecked):-
+    checkInitRow(Grilla, 0, LengthRow, RowClue, RowChecked),
+    checkInitCol(Grilla, 0, LengthCol, ColClue, ColChecked).
+    
+
+checkInitRow(_Grilla,Length,Length,_RowClue,[]).
+checkInitRow(Grilla,Index,Length,[R|RSub],[RES|RowArray]):-
+    not(Index is Length),
+    getRow(Grilla,Index,Row),
+    checkClue(Row,R,RES),
+    IndexAux is Index + 1,
+    checkInitRow(Grilla,IndexAux,Length,RSub,RowArray).
+
+
+checkInitCol(_Grilla,Length,Length,_ColClue,[]).
+checkInitCol(Grilla,Index,Length,[C|CSub],[RES|ColArray]):-
+    not(Index is Length),
+    getCol(Grilla,Index,Col),
+    checkClue(Col,C,RES),
+    IndexAux is Index + 1,
+    checkInitRow(Grilla,IndexAux,Length,CSub,ColArray).
