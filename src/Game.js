@@ -110,7 +110,7 @@ class Game extends React.Component {
     if (this.state.grid === null) {
       return null;
     }
-    const statusText = this.state.finish ? 'Congrats bro' : 'Keep playing!';
+    const statusText = this.state.finish ? '¡Felicitaciones!' : 'Seguí jugando';
    
     return (
         <div className="game">
@@ -132,14 +132,16 @@ class Game extends React.Component {
             <div class="mid">
                 <label class="rocker">
                   <input type="checkbox" onClick={this.changeMode}></input>
-                  <span class="switch-left">#</span>
+                  <span class="switch-left"> <div class="square2"></div></span>
                   <span class="switch-right">X</span>
                 </label>
             </div>
           </tr>
         </table>
         </div>
+        
     );
+    
     
   }
   changeMode() {

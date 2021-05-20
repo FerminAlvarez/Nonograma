@@ -9,9 +9,9 @@ body {
   background-image: url(./assets/8.jpg);
 }
 
-.square, .square-void {
+.square, .square-painted {
   background: lavender;
-  border: 1px solid #fff;
+  border: 1px transparent;
   font-size: 40px;
   font-weight: bold;
   margin-right: 8px;
@@ -19,7 +19,8 @@ body {
   padding: 0;
   text-align: center;
   border-radius: 17%;
-  transition: background .6s;box-shadow: 0 1px 2px rgba(0,0,0,0.07), 
+  transition: background .6s;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.07), 
   0 2px 4px rgba(0,0,0,0.07), 
   0 4px 8px rgba(0,0,0,0.07), 
   0 8px 16px rgba(0,0,0,0.07),
@@ -28,7 +29,7 @@ body {
 
   
 }
-.square-void {
+.square-painted {
   background:#888;
   color: transparent; 
 }
@@ -53,6 +54,8 @@ body {
 
 .rowClues {
   display: grid;
+  padding-top: 2px;
+  padding-right: 6px;
 }
 
 .colClues {
@@ -60,7 +63,7 @@ body {
 }
 
 .clue, .clue-sat {
-  font: 20px "Century Gothic", Futura, sans-serif;
+  font: 27px "Century Gothic", Futura, sans-serif;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -96,7 +99,7 @@ body {
 .gameInfo {
   text-align: center;
   align-items: center;
-  font: 54px "Century Gothic", Futura, sans-serif;
+  font: 54px "Roboto", Futura, sans-serif;
   transition: all .4s;
 
 }
@@ -200,7 +203,7 @@ html {
   right: 0.5em;
   bottom: 0;
   background-color: khaki;
-  color: #fff;
+  color: #333;
 }
 
 .switch-left::before,
@@ -263,9 +266,17 @@ input:checked:focus + .switch-left {
 }
 
 input:focus + .switch-left + .switch-right {
-  color: #fff;
+  color: #333;
 }
 
 input:checked:focus + .switch-left + .switch-right {
   color: #333;
+}
+
+.square2 {
+  height: 50%;
+  width: 50%;
+  background-color: #555;
+  border-radius: 8px;
+
 }
