@@ -33,7 +33,6 @@ class Game extends React.Component {
           rowClues: response['PistasFilas'],
           colClues: response['PistasColumnas'],
         });
-
         
         const grid = JSON.stringify(this.state.grid).replaceAll('"_"', "_");
         const rowClues = JSON.stringify(this.state.rowClues);
@@ -58,7 +57,6 @@ class Game extends React.Component {
           });
       }
     });
-    this.checkWin();
   }
 
   handleClick(i, j) {
@@ -164,15 +162,14 @@ class Game extends React.Component {
     var indexCol = 0;
     var colSat = true;
 
-
     while (rowSat && indexRow < this.state.rowStates.length) {
-      rowSat  = this.state.rowStates[indexRow];
+      rowSat  = rowSat && this.state.rowStates[indexRow];
       indexRow++;
     }
 
 
     while (colSat && indexCol < this.state.colStates.length) {
-      colSat  = this.state.colStates[indexCol];
+      colSat  = colSat && this.state.colStates[indexCol];
       indexCol++;
     }
     this.setState({

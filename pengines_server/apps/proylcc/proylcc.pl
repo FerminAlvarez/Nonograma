@@ -36,7 +36,6 @@ put(Contenido, [RowN, ColN], PistasFilas, PistasColumnas, Grilla, NewGrilla, Sat
 		;
 	replace(_Cell, ColN, Contenido, Row, NewRow)),
 
-
 	getCol(NewGrilla,ColN,ColOut),
 	getClue(ColN, PistasColumnas, ClueCol),
 	checkClue(ColOut, ClueCol, SatisfiedCol),
@@ -45,45 +44,67 @@ put(Contenido, [RowN, ColN], PistasFilas, PistasColumnas, Grilla, NewGrilla, Sat
   	getClue(RowN, PistasFilas, ClueRow),
  	checkClue(RowOut, ClueRow, SatisfiedRow) ,!.
 
-%Consideramos vacío a los elementos no definidos o que son X
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Se considera vacío a los elementos no instanciados o que son X
+% isVoid(Elem).
+%
 isVoid(Elem):- not(ground(Elem)) , !.
 isVoid("X").
 
-% Dado un indice y un arreglo de pistas, obtenemos la correspondiente.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Dado un indice y un arreglo de pistas, se obtiene la pista correspondiente.
+% getClue(Index,Clue,RES).
+%
 getClue(Index, Clue, RES):- nth0(Index, Clue, RES).
 
 
-% Dado un numero de columna obtenemos el arreglo columna correspondiente.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Dado un numero de columna y un arreglo de columnas, se obtiene la pista correspondiente.
+% getCol(ColN,PistasColumnas,RES).
+%
 getCol([],_,[]).
 getCol([L1|Ls],ColN, [Elem|Col]):- nth0(ColN, L1, Elem), getCol(Ls,ColN, Col).
 
-% Dado un numero de fila obtenemos el arreglo fila correspondiente.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Dado un numero de pista y un arreglo de pistas, se obtiene la pista correspondiente.
+% getRow(RowN,PistasFilas,RES).
+%
 getRow(Grilla,RowN,RES):- nth0(RowN, Grilla, RES).
 
 	
 
-% Primero limpiamos todos los casilleros vacios y una vez encontrada una cruz dejamos que verifique todo el checkClueAux.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Determina si una fila o columna satisface su pista correspondiente.
+% checkClue(Fila/Columna,PistasFilas/PistasColumnas,RES).
+% Se utiliza una "cascara" que se encarga de omitir los elementos que no son # y luego se usa checkClueAux
+
+
 % Si queda un solo elemento y no hay mas pistas que satisfacer entonces debe ser vacio.
-checkClue([Elem],[0],1):- isVoid(Elem).
-% Si queda un solo elemento y no hay mas pistas que satisfacer entonces debe ser vacio.
+%																							checkClue([Elem],[0],1):- isVoid(Elem).
+% Si no queda ningún elemento y no hay mas pistas que satisfacer entonces satisface.
 checkClue([],[0],1).
 checkClue([],[],1).
-% Si es el elemento es vacío entonces llamamos con el siguiente elemento.
+% Si el elemento es vacío entonces se llama con el siguiente elemento de la lista.
 checkClue([Elem|Sublist],Clue,RES):- isVoid(Elem) , checkClue(Sublist,Clue,RES).
-% Si es el elemento no es vacío, dejamos que checkClueAux se encargue.
+% Si es el elemento no es vacío, se encarga checkClueAux.
 checkClue([Elem|Sublist],Clue,RES):- Elem == "#" , checkClueAux([Elem|Sublist],Clue,RES).
 % Cualquier otro caso es falso.
 checkClue(_,_,0).
 
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Determina si una fila o columna satisface su pista correspondiente, esta fila o columna debe comenzar con un elemento no "vacío"
+% checkClueAux(Fila/Columna,PistasFilas/PistasColumnas,RES).
 % Si queda un solo elemento y no hay mas pistas que satisfacer entonces debe ser vacio.
-checkClueAux([Elem],[0],1):- isVoid(Elem).
-% Si es el elemento es vacío entonces llamamos con el siguiente elemento.
+%																							checkClueAux([Elem],[0],1):- isVoid(Elem).
+% Si no queda ningún elemento y no hay mas pistas que satisfacer entonces satisface.
 checkClueAux([],[0],1).
-% Si el elemento no es vacío, entonces decrementamos la valor de la pista y llamamamos recursivamente con el siguiente elemento
+% Si el elemento es #, entonces se decrementa el valor de la pista y se llama recursivamente con el siguiente elemento de la fila o columna.
 checkClueAux([Elem|Sublist],[Clue|Ppost],RES):- Elem == "#", P is (Clue-1), checkClueAux(Sublist,[P|Ppost],RES),!.
-% Si el elemento es vacío y pista es 0, significa que cumplió con al menos una parte de las pistas, entonces llamamos con la parte siguiente.
+% Si el elemento es vacío y el valor de la pista está en 0, significa que cumplió con al menos una parte de las pistas, entonces se llama con la parte siguiente.
 checkClueAux([Elem|Sublist],[Clue|P],RES):- isVoid(Elem), Clue is 0, checkClueAux(Sublist,P,RES).
-% Si llegamos a este caso siginifca que no hay mas pistas que resolver, por lo que todos los elementos que quedan deben estar vacios.
+% Si se alcanza este caso siginifca que no hay mas pistas que resolver, por lo que todos los elementos que quedan deben estar vacios.
 checkClueAux([Elem|Sublist],[],RES):- isVoid(Elem), checkClueAux(Sublist,[0],RES).
 
 % Cualquier otro caso es falso.
@@ -92,14 +113,22 @@ checkClueAux(_,_,0).
 
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Se almacen en RowChecked las filas que satisfacen las pistas de una grilla dada, y lo mismo para las columnas en ColChecked.
+% checkInit(Grilla,LengthRow,LengthCol,RowClue,ColClue,RowChecked,ColChecked).
 
 checkInit(Grilla, LengthRow, LengthCol, RowClue, ColClue, RowChecked, ColChecked):-
     checkInitRow(Grilla, 0, LengthRow, RowClue, RowChecked), 
     checkInitCol(Grilla, 0, LengthCol, ColClue, ColChecked).
     
-% Si la longitud es igual al contador entonces terminé.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Se almacen en RES las filas que satisfacen las pistas de una grilla dada.
+% checkInitRow(Grilla,Length,Length,RowClue,RES).
+
+% Si la longitud es igual al contador entonces no hay que "recorrer" más.
 checkInitRow(_Grilla,Length,Length,_RowClue,[]).
-% Caso recursivo, si el contador no es igual a la longitud, entonces obtengo la fila del contador, verifico que esté bien y llamo para el resto de filas
+% Caso recursivo, si el contador no es igual a la longitud, entonces se obtiene la fila del contador, se verifica que esté bien y se obtiene para el resto de filas
 checkInitRow(Grilla,Index,Length,[R|RSub],[RES|RowArray]):-
     not(Index is Length),
     getRow(Grilla,Index,Row),
@@ -108,9 +137,13 @@ checkInitRow(Grilla,Index,Length,[R|RSub],[RES|RowArray]):-
     checkInitRow(Grilla,IndexAux,Length,RSub,RowArray).
 
 
-% Si la longitud es igual al contador entonces terminé.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Se almacen en RES las columnas que satisfacen las pistas de una grilla dada.
+% checkInitCol(Grilla,Length,Length,ColClue,RES).
+
+% Si la longitud es igual al contador entonces no hay que "recorrer" más.
 checkInitCol(_Grilla,Length,Length,_ColClue,[]).
-% Caso recursivo, si el contador no es igual a la longitud, entonces obtengo la fila del contador, verifico que esté bien y llamo para el resto de filas
+% Caso recursivo, si el contador no es igual a la longitud, entonces se obtiene la fila del contador, se verifica que esté bien y se obtiene para el resto de filas
 checkInitCol(Grilla,Index,Length,[C|CSub],[RES|ColArray]):-
     not(Index is Length),
     getCol(Grilla,Index,Col),
