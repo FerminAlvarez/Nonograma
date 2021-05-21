@@ -40,10 +40,7 @@ class Game extends React.Component {
         const colClues = JSON.stringify(this.state.colClues);
         // Realizamos el chequeo inicial de las pistas.
         const checkInit = 'checkInit('+grid+','+response['PistasFilas'].length+','+response['PistasColumnas'].length+','+rowClues+','+colClues+',RowChecked,ColChecked)';
-
-        console.log(this.state.grid);
         this.pengine.query(checkInit, (successCheck, responseCheck) => {
-          console.log(responseCheck);
           if (successCheck) {
             var rowStatesInit = new Array(responseCheck['RowChecked'].length);
             for(var i = 0; i <rowStatesInit.length; i++){
@@ -61,6 +58,7 @@ class Game extends React.Component {
           });
       }
     });
+    this.checkWin();
   }
 
   handleClick(i, j) {
@@ -150,10 +148,7 @@ class Game extends React.Component {
           </tbody>
         </table>
         </div>
-        
     );
-    
-    
   }
   changeMode() {
     var mode = this.state.contenido === "X" ? "#" : "X";

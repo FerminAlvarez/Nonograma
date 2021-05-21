@@ -37,12 +37,12 @@ put(Contenido, [RowN, ColN], PistasFilas, PistasColumnas, Grilla, NewGrilla, Sat
 	replace(_Cell, ColN, Contenido, Row, NewRow)),
 
 
-    getCol(NewGrilla,ColN,ColOut),
-  	getClue(ColN, PistasColumnas, ClueCol),
-  	checkClue(ColOut, ClueCol, SatisfiedCol),
+	getCol(NewGrilla,ColN,ColOut),
+	getClue(ColN, PistasColumnas, ClueCol),
+	checkClue(ColOut, ClueCol, SatisfiedCol),
 
-  	getClue(RowN, PistasFilas, ClueRow),
  	getRow(NewGrilla,RowN,RowOut),
+  	getClue(RowN, PistasFilas, ClueRow),
  	checkClue(RowOut, ClueRow, SatisfiedRow) ,!.
 
 %Consideramos vacío a los elementos no definidos o que son X
