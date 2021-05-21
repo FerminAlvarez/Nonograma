@@ -1,10 +1,9 @@
-:- module(proylcc,
+	:- module(proylcc,
 	[  
 		put/8
 	]).
 
 :-use_module(library(lists)).
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -44,30 +43,31 @@ put(Contenido, [RowN, ColN], PistasFilas, PistasColumnas, Grilla, NewGrilla, Sat
 
   	getClue(RowN, PistasFilas, ClueRow),
  	getRow(NewGrilla,RowN,RowOut),
- 	checkClue(RowOut, ClueRow, SatisfiedRow).
+ 	checkClue(RowOut, ClueRow, SatisfiedRow) ,!.
 
 %Consideramos vacío a los elementos no definidos o que son X
 isVoid(Elem):- not(ground(Elem)) , !.
 isVoid("X").
 
-% Dado un indice y un arreglo de pistas, obtengo la correspondiente.
+% Dado un indice y un arreglo de pistas, obtenemos la correspondiente.
 getClue(Index, Clue, RES):- nth0(Index, Clue, RES).
 
 
-% Dado un numero de columna obtengo el arreglo columna correspondiente.
+% Dado un numero de columna obtenemos el arreglo columna correspondiente.
 getCol([],_,[]).
 getCol([L1|Ls],ColN, [Elem|Col]):- nth0(ColN, L1, Elem), getCol(Ls,ColN, Col).
 
-% Dado un numero de fila obtengo el arreglo fila correspondiente.
+% Dado un numero de fila obtenemos el arreglo fila correspondiente.
 getRow(Grilla,RowN,RES):- nth0(RowN, Grilla, RES).
 
-
+	
 
 % Primero limpiamos todos los casilleros vacios y una vez encontrada una cruz dejamos que verifique todo el checkClueAux.
 % Si queda un solo elemento y no hay mas pistas que satisfacer entonces debe ser vacio.
 checkClue([Elem],[0],1):- isVoid(Elem).
 % Si queda un solo elemento y no hay mas pistas que satisfacer entonces debe ser vacio.
 checkClue([],[0],1).
+checkClue([],[],1).
 % Si es el elemento es vacío entonces llamamos con el siguiente elemento.
 checkClue([Elem|Sublist],Clue,RES):- isVoid(Elem) , checkClue(Sublist,Clue,RES).
 % Si es el elemento no es vacío, dejamos que checkClueAux se encargue.
@@ -94,7 +94,7 @@ checkClueAux(_,_,0).
 
 
 checkInit(Grilla, LengthRow, LengthCol, RowClue, ColClue, RowChecked, ColChecked):-
-    checkInitRow(Grilla, 0, LengthRow, RowClue, RowChecked),
+    checkInitRow(Grilla, 0, LengthRow, RowClue, RowChecked), 
     checkInitCol(Grilla, 0, LengthCol, ColClue, ColChecked).
     
 % Si la longitud es igual al contador entonces terminé.
@@ -116,4 +116,4 @@ checkInitCol(Grilla,Index,Length,[C|CSub],[RES|ColArray]):-
     getCol(Grilla,Index,Col),
     checkClue(Col,C,RES),
     IndexAux is Index + 1,
-    checkInitRow(Grilla,IndexAux,Length,CSub,ColArray).
+    checkInitCol(Grilla,IndexAux,Length,CSub,ColArray).

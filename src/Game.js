@@ -9,7 +9,7 @@ class Game extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      grid: null,
+      grid: null, //
       rowClues: null,
       colClues: null,
       waiting: false,
@@ -35,14 +35,15 @@ class Game extends React.Component {
         });
 
         
-        const grid = JSON.stringify(this.state.grid);
+        const grid = JSON.stringify(this.state.grid).replaceAll('"_"', "_");
         const rowClues = JSON.stringify(this.state.rowClues);
         const colClues = JSON.stringify(this.state.colClues);
-      
-
         // Realizamos el chequeo inicial de las pistas.
         const checkInit = 'checkInit('+grid+','+response['PistasFilas'].length+','+response['PistasColumnas'].length+','+rowClues+','+colClues+',RowChecked,ColChecked)';
+
+        console.log(this.state.grid);
         this.pengine.query(checkInit, (successCheck, responseCheck) => {
+          console.log(responseCheck);
           if (successCheck) {
             var rowStatesInit = new Array(responseCheck['RowChecked'].length);
             for(var i = 0; i <rowStatesInit.length; i++){
@@ -75,8 +76,8 @@ class Game extends React.Component {
     const colClues = JSON.stringify(this.state.colClues);
     const contenido = JSON.stringify(this.state.contenido);
     
-    const queryS = 'put(' + contenido + ', [' + i + ',' + j + ']' + ',' + rowClues + ',' + colClues+ ',' + squaresS + ', GrillaRes, FilaSat, ColSat)';
-    console.log(queryS);
+    const queryS = 'put(' + contenido + ', [' + i + ',' + j + '],' + rowClues + ',' + colClues+ ',' + squaresS + ', GrillaRes, FilaSat, ColSat)';
+    
     this.setState({
       waiting: true
     });
@@ -115,28 +116,38 @@ class Game extends React.Component {
     return (
         <div className="game">
         <table>
-          <tr>
-          <Board
-            grid={this.state.grid}
-            rowClues={this.state.rowClues}
-            colClues={this.state.colClues}
-            onClick={(i, j) => this.handleClick(i,j)}
-            rowStates = {this.state.rowStates}
-            colStates = {this.state.colStates}
-          />
-          </tr>
-          <tr>
-            <div className="gameInfo">
-              {statusText}
-            </div>
-            <div class="mid">
-                <label class="rocker">
-                  <input type="checkbox" onClick={this.changeMode}></input>
-                  <span class="switch-left"> <div class="square2"></div></span>
-                  <span class="switch-right">X</span>
-                </label>
-            </div>
-          </tr>
+          <tbody>
+            <tr>
+              <td>
+                <Board
+                  grid={this.state.grid}
+                  rowClues={this.state.rowClues}
+                  colClues={this.state.colClues}
+                  onClick={(i, j) => this.handleClick(i,j)}
+                  rowStates = {this.state.rowStates}
+                  colStates = {this.state.colStates}
+                />
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div className="gameInfo">
+                  {statusText}
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div className="mid">
+                    <label className="rocker">
+                      <input type="checkbox" onClick={this.changeMode}></input>
+                      <span className="switch-left"> <div className="square2"></div></span>
+                      <span className="switch-right">X</span>
+                    </label>
+                </div>
+              </td>
+            </tr>
+          </tbody>
         </table>
         </div>
         
