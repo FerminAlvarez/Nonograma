@@ -5,6 +5,9 @@
 
 :-use_module(library(lists)).
 
+
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % replace(?X, +XIndex, +Y, +Xs, -XsY)
@@ -50,6 +53,7 @@ put(Contenido, [RowN, ColN], PistasFilas, PistasColumnas, Grilla, NewGrilla, Sat
 %
 isVoid(Elem):- not(ground(Elem)) , !.
 isVoid("X").
+isVoid([]).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Dado un indice y un arreglo de pistas, se obtiene la pista correspondiente.
@@ -82,6 +86,7 @@ getRow(Grilla,RowN,RES):- nth0(RowN, Grilla, RES).
 % Si queda un solo elemento y no hay mas pistas que satisfacer entonces debe ser vacio.
 %																							checkClue([Elem],[0],1):- isVoid(Elem).
 % Si no queda ningún elemento y no hay mas pistas que satisfacer entonces satisface.
+checkClue([Elem],[0],1):- isVoid(Elem).
 checkClue([],[0],1).
 checkClue([],[],1).
 % Si el elemento es vacío entonces se llama con el siguiente elemento de la lista.
@@ -97,13 +102,15 @@ checkClue(_,_,0).
 % Determina si una fila o columna satisface su pista correspondiente, esta fila o columna debe comenzar con un elemento no "vacío"
 % checkClueAux(Fila/Columna,PistasFilas/PistasColumnas,RES).
 % Si queda un solo elemento y no hay mas pistas que satisfacer entonces debe ser vacio.
-%																							checkClueAux([Elem],[0],1):- isVoid(Elem).
+checkClueAux([Elem],[0],1):- isVoid(Elem).
 % Si no queda ningún elemento y no hay mas pistas que satisfacer entonces satisface.
 checkClueAux([],[0],1).
 % Si el elemento es #, entonces se decrementa el valor de la pista y se llama recursivamente con el siguiente elemento de la fila o columna.
 checkClueAux([Elem|Sublist],[Clue|Ppost],RES):- Elem == "#", P is (Clue-1), checkClueAux(Sublist,[P|Ppost],RES),!.
-% Si el elemento es vacío y el valor de la pista está en 0, significa que cumplió con al menos una parte de las pistas, entonces se llama con la parte siguiente.
-checkClueAux([Elem|Sublist],[Clue|P],RES):- isVoid(Elem), Clue is 0, checkClueAux(Sublist,P,RES).
+% Si el elemento es vacío y el valor de la pista está en 0, significa que cumplió con al menos una parte de las pistas, entonces se llama con la parte siguiente. ___________________________________________________________________________________________________________________
+checkClueAux([Elem|Sublist],[Clue|P],RES):- isVoid(Elem), Clue is 0, checkClue(Sublist,P,RES).
+
+
 % Si se alcanza este caso siginifca que no hay mas pistas que resolver, por lo que todos los elementos que quedan deben estar vacios.
 checkClueAux([Elem|Sublist],[],RES):- isVoid(Elem), checkClueAux(Sublist,[0],RES).
 

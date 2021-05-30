@@ -60,44 +60,49 @@ class Game extends React.Component {
   }
 
   handleClick(i, j) {
-    // No action on click if we are waiting.
-    if (this.state.waiting) {
-      return;
-    }
-    // Build Prolog query to make the move, which will look as follows:
-    // put("#",[0,1],[], [],[["X",_,_,_,_],["X",_,"X",_,_],["X",_,_,_,_],["#","#","#",_,_],[_,_,"#","#","#"]], GrillaRes, FilaSat, ColSat)
-
-    const squaresS = JSON.stringify(this.state.grid).replaceAll('"_"', "_"); // Remove quotes for variables.
-    const rowClues = JSON.stringify(this.state.rowClues);
-    const colClues = JSON.stringify(this.state.colClues);
-    const contenido = JSON.stringify(this.state.contenido);
-    
-    const queryS = 'put(' + contenido + ', [' + i + ',' + j + '],' + rowClues + ',' + colClues+ ',' + squaresS + ', GrillaRes, FilaSat, ColSat)';
-    
-    this.setState({
-      waiting: true
-    });
-    this.pengine.query(queryS, (success, response) => {
-      if (success) {
-        const rowStatesAux = this.state.rowStates;
-        rowStatesAux[i] = response['FilaSat'] === 1 ? true : false;
-
-        const colStatesAux = this.state.colStates;
-        colStatesAux[j] = response['ColSat'] === 1 ? true : false;
-        this.checkWin();
-        this.setState({
-          grid: response['GrillaRes'],
-          rowStates : rowStatesAux,
-          colStates : colStatesAux,
-          waiting: false,
-        });
-        
-      } else {
-        this.setState({
-          waiting: false
-        });
+    if(this.state.finish===false){
+      // No action on click if we are waiting.
+      if (this.state.waiting) {
+        return;
       }
-    });
+      // Build Prolog query to make the move, which will look as follows:
+      // put("#",[0,1],[], [],[["X",_,_,_,_],["X",_,"X",_,_],["X",_,_,_,_],["#","#","#",_,_],[_,_,"#","#","#"]], GrillaRes, FilaSat, ColSat)
+
+      const squaresS = JSON.stringify(this.state.grid).replaceAll('"_"', "_"); // Remove quotes for variables.
+      const rowClues = JSON.stringify(this.state.rowClues);
+      const colClues = JSON.stringify(this.state.colClues);
+      const contenido = JSON.stringify(this.state.contenido);
+      
+      const queryS = 'put(' + contenido + ', [' + i + ',' + j + '],' + rowClues + ',' + colClues+ ',' + squaresS + ', GrillaRes, FilaSat, ColSat)';
+      
+      console.log(queryS);
+      this.setState({
+        waiting: true
+      });
+      this.pengine.query(queryS, (success, response) => {
+        if (success) {
+          const rowStatesAux = this.state.rowStates;
+          rowStatesAux[i] = response['FilaSat'] === 1 ? true : false;
+
+          const colStatesAux = this.state.colStates;
+          colStatesAux[j] = response['ColSat'] === 1 ? true : false;
+          this.checkWin();
+          this.setState({
+            grid: response['GrillaRes'],
+            rowStates : rowStatesAux,
+            colStates : colStatesAux,
+            waiting: false,
+          });
+          
+        } else {
+          this.setState({
+            waiting: false
+          });
+        }
+      });
+    }else{
+      alert("¡Ya ganaste!");
+    }
   }
 
 
