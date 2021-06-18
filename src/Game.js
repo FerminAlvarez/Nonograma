@@ -1,6 +1,7 @@
 import React from 'react';
 import PengineClient from './PengineClient';
 import Board from './Board';
+import Solution from './Solution';
 
 class Game extends React.Component {
 
@@ -17,11 +18,14 @@ class Game extends React.Component {
       rowStates:[],
       colStates:[],
       finish: false,
+      solution:null,
+      showClue: false,
     };
     this.handleClick = this.handleClick.bind(this);
     this.handlePengineCreate = this.handlePengineCreate.bind(this);
     this.pengine = new PengineClient(this.handlePengineCreate);
     this.changeMode = this.changeMode.bind(this);
+    this.changeShowClue = this.changeShowClue.bind(this);
   }  
   
   handlePengineCreate() {
@@ -53,6 +57,16 @@ class Game extends React.Component {
               rowStates: rowStatesInit,
               colStates: colStatesInit,
             });
+          
+            const queryS = 'solucion('+grid+','+rowClues+','+colClues+',Solution)'; 
+            this.pengine.query(queryS, (success, response) => {
+              if (success) {
+                this.setState({
+                  solution: response['Solution'],
+                });
+              console.log(this.state.solution);
+            }
+          });
           }
           });
       }
@@ -71,11 +85,17 @@ class Game extends React.Component {
       const squaresS = JSON.stringify(this.state.grid).replaceAll('"_"', "_"); // Remove quotes for variables.
       const rowClues = JSON.stringify(this.state.rowClues);
       const colClues = JSON.stringify(this.state.colClues);
-      const contenido = JSON.stringify(this.state.contenido);
+      var contenido = null;
+
+      if(!this.state.showClue ===true)
+        contenido = JSON.stringify(this.state.contenido);
+      else{
+        contenido = JSON.stringify(this.state.solution[i][j]);
+      }
       
+
+
       const queryS = 'put(' + contenido + ', [' + i + ',' + j + '],' + rowClues + ',' + colClues+ ',' + squaresS + ', GrillaRes, FilaSat, ColSat)';
-      
-      console.log(queryS);
       this.setState({
         waiting: true
       });
@@ -139,6 +159,32 @@ class Game extends React.Component {
             </tr>
             <tr>
               <td>
+                  <div className="mid">
+                      <label className="rocker">
+                        <input type="checkbox" onClick={this.changeMode}></input>
+                        <span className="switch-left"> <div className="square2"></div></span>
+                        <span className="switch-right">X</span>
+                      </label>
+                      <input onClick={this.changeShowClue} className="l" type="checkbox"></input>
+                  </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <table>
+          <tbody>
+            <tr>
+              <td>
+                <Solution
+                  grid={this.state.grid}
+                  rowClues={this.state.rowClues}
+                  colClues={this.state.colClues}
+                  onClick={(i, j) => this.handleClick(i,j)}
+                />
+              </td>
+            </tr>
+            <tr>
+              <td>
                 <div className="mid">
                     <label className="rocker">
                       <input type="checkbox" onClick={this.changeMode}></input>
@@ -157,6 +203,13 @@ class Game extends React.Component {
     var mode = this.state.contenido === "X" ? "#" : "X";
     this.setState({
         contenido:mode,
+    });
+  }
+
+  changeShowClue() {
+    var mode = this.state.showClue === true ? false : true;
+    this.setState({
+      showClue:mode,
     });
   }
 
