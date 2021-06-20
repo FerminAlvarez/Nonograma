@@ -519,14 +519,14 @@ body
 
 #button-14 .knobs:before
 {
-    content: 'NO';
+    content: 'SI';
     text-align: center;
     left: 4px;
 }
 
 #button-14 .knobs:after
 {
-    content: 'SI';
+    content: 'NO';
     text-align: center;
     right: 4px;
 }

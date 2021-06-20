@@ -183,7 +183,7 @@ generarPosiblesAux([Elem|Sublist],[Clue|P]):- Elem = "X", Clue is 0, generarPosi
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Se genera una fila con los movimiento que se sabe que son correctos.
-% generarPosibles(ListaActual,Pista,Longitud,Salida).
+% filaCauta(ListaActual,Pista,Longitud,Salida).
 filaCauta(Actual,Pista,Length,Out):-
     findall(Actual,(length(Actual,Length),generarPosibles(Actual,Pista)),Todas),
     interseccion(Todas,Length,Out).
@@ -251,38 +251,33 @@ cumpleCondicion([P|Ps],Length):-
 
 
 
-
-
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Método cascara el cual a partir de una grilla genera una nueva con las pistas que satisfacen cumpleCondicion(Pista,Longitud)
-% primeraPasadaFila(Fila,PistaFila,PistasColumna,GrillaSalida).
+% primeraPasada(GrillaIn,PistaFila,PistasColumna,GrillaSalida).
 primeraPasada(GrillaIn,PistasFila,PistasColumna,GrillaFinal):-
     length(PistasFila,LongitudFilas),
-    primeraPasadaFilaAux(GrillaIn, PistasFila, GrillaSalidaFilas,LongitudFilas),
+    primeraPasadaAux(GrillaIn, PistasFila, GrillaSalidaFilas,LongitudFilas),
  	transpose(GrillaSalidaFilas, GrillaTraspuesta),
     length(PistasFila,LongitudColumnas),
-    primeraPasadaFilaAux(GrillaTraspuesta, PistasColumna, GrillaSalidaColumnas,LongitudColumnas),
+    primeraPasadaAux(GrillaTraspuesta, PistasColumna, GrillaSalidaColumnas,LongitudColumnas),
     transpose(GrillaSalidaColumnas, GrillaFinal).
-
-
 
     
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Método auxiliar que sirve para generar el método primera pasada.
-% primeraPasadaFilaAux(Fila,PistaFila,Salida,Longitud).
+% primeraPasadaAux(Grilla,Pista,Salida,Longitud).
 
 %Caso Base: No hay pistas para analizar
-primeraPasadaFilaAux(_,[],[],_).
+primeraPasadaAux(_,[],[],_).
 %Casos recursivo 1: Cumple con la condicion de primerapasada.
-primeraPasadaFilaAux([Fila|Resto],[Pista|RestoPista],[FilaSalida|RestoSalida],Longitud):-
+primeraPasadaAux([Fila|Resto],[Pista|RestoPista],[FilaSalida|RestoSalida],Longitud):-
 	cumpleCondicion(Pista,Longitud),
 	filaCauta(Fila,Pista,Longitud,FilaSalida),
-	primeraPasadaFilaAux(Resto,RestoPista,RestoSalida,Longitud).
+	primeraPasadaAux(Resto,RestoPista,RestoSalida,Longitud).
 	
 %Caso recursivo 2: No cumple con la condicion.
-primeraPasadaFilaAux([Fila|Resto],[_Pista|RestoPista],[Fila|RestoSalida],Longitud):-
-	primeraPasadaFilaAux(Resto,RestoPista,RestoSalida,Longitud).
+primeraPasadaAux([Fila|Resto],[_Pista|RestoPista],[Fila|RestoSalida],Longitud):-
+	primeraPasadaAux(Resto,RestoPista,RestoSalida,Longitud).
 
 
 
@@ -383,8 +378,8 @@ pasadaFinal(GrillaIn, PistasFila, PistasCol, GrillaOut):-
 	pasadaFinalAux(GrillaIn, PistasFila, PistasCol, [], GrillaOut).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Método auxiliar que es utilizado porpasadaFinal(GrillaIN,PistasFilas,PistasColumna,Salida). 
-% pasadaFinalAux(GrillaIN,PistasFilas,PistasColumna,Salida). 
+% Método auxiliar que es utilizado por pasadaFinal(GrillaIN,PistasFilas,PistasColumna,Salida). 
+% pasadaFinalAux(GrillaIN,PistasFilas,PistasColumna,Acumulado,Salida). 
 pasadaFinalAux(_GrillaIn,[],PistasColumna,Acumulado,GrillaOut):-
     length(PistasColumna,LengthCol),
     checkInitCol(Acumulado,0,LengthCol,PistasColumna,CheckColumna),
@@ -414,39 +409,3 @@ solucion(GrillaIn,PistasFila,PistasColumna,GrillaFinal):-
 
 
 
-%Estandarizar si usamos not is o \=
-%Cambiar nombres
-%Comentar bien
-%Comentar que por eficiencia el length en primera pasada se pasa como parametro
-%A ingles
-%transpose
-%%en el segunda pasada caso base no usamos check init para evitar que se realice todo.
-%Cut en la 290 pq pasaba hacia redu de un solo caso
-
-
-%% \+ /1   
-%% not(member...
-% \+(member...
-
-% init([[_,_,_,_,_,_],
-%         [_,_,_,_,_,_],
-%          [_,_,_,_,_,_],
-%         [_,_,_,_,_,_],
-%          [_,_,_,_,_,_]], 
-%         [[2,1],[1,1],[2],[1,1],[1,1]],
-%         [[1,1],[2],[1,1],[2],[1,2]],
-%         GrillaOut).
-
-%trace, solucion([[_, _ , _ ,_ , _ , _ ,_, _ , _ , _ ],
-%	[_, _ , _ ,_ , _ , _ ,_, _ , _ , _ ],
-%	[_, _ , _ ,_ , _ , _ ,_, _ , _ , _ ],
-%	[_, _ , _ ,_ , _ , _ ,_, _ , _ , _ ],
-%	[_, _ , _ ,_ , _ , _ ,_, _ , _ , _ ],
-%	[_, _ , _ ,_ , _ , _ ,_, _ , _ , _ ],
-%	[_, _ , _ ,_ , _ , _ ,_, _ , _ , _ ],
-%	[_, _ , _ ,_ , _ , _ ,_, _ , _ , _ ],
-%	[_, _ , _ ,_ , _ , _ ,_, _ , _ , _ ],
-%	[_, _ , _ ,_ , _ , _ ,_, _ , _ , _ ]], 
- %       [[2], [2,3], [1,2], [2,4], [7], [5,2], [9], [2,5], [2,2], [2]],
-  %       [[1,1], [3,3], [5], [1,3], [2,5,1], [9], [8], [2,2], [4], [2]],
-   %      GrillaOut).

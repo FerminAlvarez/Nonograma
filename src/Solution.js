@@ -1,7 +1,7 @@
 import React from 'react';
 import SquareSolution from './SquareSolution';
 
-class Board extends React.Component {
+class Solution extends React.Component {
     render() {
         const numOfRows = this.props.grid.length;
         const numOfCols = this.props.grid[0].length;
@@ -25,4 +25,4 @@ class Board extends React.Component {
         
     }    
 }
-export default Board;
+export default Solution;
