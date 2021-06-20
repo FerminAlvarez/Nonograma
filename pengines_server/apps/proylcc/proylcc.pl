@@ -42,13 +42,13 @@ put(Contenido, [RowN, ColN], PistasFilas, PistasColumnas, Grilla, NewGrilla, Sat
 
  	getRow(NewGrilla,RowN,RowOut),
   	getClue(RowN, PistasFilas, ClueRow),
- 	checkClue(RowOut, ClueRow, SatisfiedRow) ,!.
+ 	checkClue(RowOut, ClueRow, SatisfiedRow).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Se considera vacío a los elementos no instanciados o que son X
 % isVoid(Elem).
 %
-isVoid(Elem):- not(ground(Elem)) , !.
+isVoid(Elem):- not(ground(Elem)).
 isVoid("X").
 isVoid([]).
 
@@ -118,12 +118,12 @@ checkClueAux(_,_,0).
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Se almacen en RowChecked las filas que satisfacen las pistas de una grilla dada, y lo mismo para las columnas en ColChecked.
+% Se almacena en RowChecked las filas que satisfacen las pistas de una grilla dada, y lo mismo para las columnas en ColChecked.
 % checkInit(Grilla,LengthRow,LengthCol,RowClue,ColClue,RowChecked,ColChecked).
 
 checkInit(Grilla, LengthRow, LengthCol, RowClue, ColClue, RowChecked, ColChecked):-
     checkInitRow(Grilla, 0, LengthRow, RowClue, RowChecked), 
-    checkInitCol(Grilla, 0, LengthCol, ColClue, ColChecked), !.
+    checkInitCol(Grilla, 0, LengthCol, ColClue, ColChecked).
     
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -142,7 +142,7 @@ checkInitRow(Grilla,Index,Length,[R|RSub],[RES|RowArray]):-
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Se almacen en RES las columnas que satisfacen las pistas de una grilla dada.
+% Se almacena en RES las columnas que satisfacen las pistas de una grilla dada.
 % checkInitCol(Grilla,Length,Length,ColClue,RES).
 
 % Si la longitud es igual al contador entonces no hay que "recorrer" más.
@@ -177,87 +177,86 @@ generarPosibles([Elem|Sublist],Clue):- Elem = "X" , generarPosibles(Sublist,Clue
 
 %Caso base: si la lista está vacía y las pistas ya son 0.
 generarPosiblesAux([],[0]).
-%Caso recursivo, insertamos en la lista a devolver un "#" y si las pista no es 0, entonces llamamos recursivamente.
+%Caso recursivo, insertamos en la lista a devolver un "#" y si la pista no es 0, entonces llamamos recursivamente.
 generarPosiblesAux([Elem|Sublist],[Clue|Ppost]):- Elem = "#",Clue \= 0, P is (Clue-1), generarPosiblesAux(Sublist,[P|Ppost]).
 generarPosiblesAux([Elem|Sublist],[Clue|P]):- Elem = "X", Clue is 0, generarPosibles(Sublist,P).
 
-
-filaCauta(Actual,Pista,Length,FilaC):-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Se genera una fila con los movimiento que se sabe que son correctos.
+% generarPosibles(ListaActual,Pista,Longitud,Salida).
+filaCauta(Actual,Pista,Length,Out):-
     findall(Actual,(length(Actual,Length),generarPosibles(Actual,Pista)),Todas),
-    interseccion(Todas,Length,FilaC).
+    interseccion(Todas,Length,Out).
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Es un método "cascara" en el cual a partir de una lista de listas, se obtiene en Salida la intersección de las mismas.
+% interseccion(Posibles,Longitud,Salida).
 interseccion(Posibles,Len,Salida):-
     AuxLen is Len - 1,
     interseccion_aux(Posibles,AuxLen,[],Salida).
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Es un método auxiliar recursivo que es utilizado por intersección.
+% El parametro almacenado empieza vacío si es la primer llamada.
+% interseccionAux(Posibles,Longitud,Almacenado,Salida).
+
+%Caso base:
 interseccion_aux(_,-1,Aux,Aux).
-%....
 interseccion_aux(_,-1,_,_).
 
+%Caso recursivo
 interseccion_aux(Posibles,N,LAux,Salida):- 
-    getCol(Posibles,N,Iesimos), 
-    allE("X",Iesimos), 
-    append(["X"],LAux,Aux),
+    getCol(Posibles,N,Iesimos),  %Obtenemos de cada lista posible el elemento N
+    allE("X",Iesimos),   
+    append(["X"],LAux,Aux),   %Si todos son X, entonces lo agregamos a la lista acumulado
     NAux is N -1,
-    interseccion_aux(Posibles,NAux,Aux,Salida), !.
+    interseccion_aux(Posibles,NAux,Aux,Salida).
 
 interseccion_aux(Posibles,N,LAux,Salida):- 
-    getCol(Posibles,N,Iesimos), 
+    getCol(Posibles,N,Iesimos),   %Obtenemos de cada lista posible el elemento N
     allE("#",Iesimos), 
-    append(["#"],LAux,Aux),
+    append(["#"],LAux,Aux),   %Si todos son #, entonces lo agregamos a la lista acumulado
     NAux is N -1,
-    interseccion_aux(Posibles,NAux,Aux,Salida), !.
-
+    interseccion_aux(Posibles,NAux,Aux,Salida).
 
 %Si hay alguna distinta
 interseccion_aux(Posibles,N,In,Out):-
     append([_],In,Aux), %Agrego al final de la lista.
     NAux is N-1,
-    interseccion_aux(Posibles,NAux,Aux,Out), !.
+    interseccion_aux(Posibles,NAux,Aux,Out).
 
 
 
 
-%%Limpiar todo cumple condicion
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Dada una longitud y unas pistas determina si la suma de valores y espacios es igual a la longitud.
+% cumpleCondicion(Pista,Longitud).
 %caso base
 cumpleCondicion([0],0).
 
 %Caso en el que estamos en un espacio, restamos y seguimos.
 cumpleCondicion([0|Ps],Length):-
 	L is Length - 1,
-    cumpleCondicion(Ps,L) , !.
+    cumpleCondicion(Ps,L).
 
 %Caso normal
 cumpleCondicion([P|Ps],Length):-
     not(P is 0),
-	L is Length - 1,
+	L is Length - 1,   
     PAux is P - 1,
-    cumpleCondicion([PAux|Ps],L) , !.
-
-%cumpleCondicion([[]|Ps],Length):-
-%	L is Length - 1,
-%   cumpleCondicion([Ps],L) , !.
+    cumpleCondicion([PAux|Ps],L).
 
 
 
 
 
 
-%//Caso Base : Me quede sin pistas para analizar
-primeraPasadaFilaAux(_,[],[],_).
-%//Casos recursivo 1: Cumple con la condicion de primerapasada.
-primeraPasadaFilaAux([Fila|Resto],[Pista|RestoPista],[FilaSalida|RestoSalida],Longitud):-
-	cumpleCondicion(Pista,Longitud),
-	filaCauta(Fila,Pista,Longitud,FilaSalida),
-	primeraPasadaFilaAux(Resto,RestoPista,RestoSalida,Longitud),!.
-	
-%Caso recursivo 2: No cumple con la condicion.
-primeraPasadaFilaAux([Fila|Resto],[_Pista|RestoPista],[Fila|RestoSalida],Longitud):-
-	primeraPasadaFilaAux(Resto,RestoPista,RestoSalida,Longitud),!.
 
-
-
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Método cascara el cual a partir de una grilla genera una nueva con las pistas que satisfacen cumpleCondicion(Pista,Longitud)
+% primeraPasadaFila(Fila,PistaFila,PistasColumna,GrillaSalida).
 primeraPasada(GrillaIn,PistasFila,PistasColumna,GrillaFinal):-
     length(PistasFila,LongitudFilas),
     primeraPasadaFilaAux(GrillaIn, PistasFila, GrillaSalidaFilas,LongitudFilas),
@@ -267,26 +266,58 @@ primeraPasada(GrillaIn,PistasFila,PistasColumna,GrillaFinal):-
     transpose(GrillaSalidaColumnas, GrillaFinal).
 
 
-%Caso base 1, ya esta todo OK
+
+    
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Método auxiliar que sirve para generar el método primera pasada.
+% primeraPasadaFilaAux(Fila,PistaFila,Salida,Longitud).
+
+%Caso Base: No hay pistas para analizar
+primeraPasadaFilaAux(_,[],[],_).
+%Casos recursivo 1: Cumple con la condicion de primerapasada.
+primeraPasadaFilaAux([Fila|Resto],[Pista|RestoPista],[FilaSalida|RestoSalida],Longitud):-
+	cumpleCondicion(Pista,Longitud),
+	filaCauta(Fila,Pista,Longitud,FilaSalida),
+	primeraPasadaFilaAux(Resto,RestoPista,RestoSalida,Longitud).
+	
+%Caso recursivo 2: No cumple con la condicion.
+primeraPasadaFilaAux([Fila|Resto],[_Pista|RestoPista],[Fila|RestoSalida],Longitud):-
+	primeraPasadaFilaAux(Resto,RestoPista,RestoSalida,Longitud).
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Genera una grilla con los movimientos que son correctos mientras la lista recibida y la de salida sean distintas.
+% segundaPasada(GrillaIn,PistaFila,PistasColumna,GrillaSalida).
+
+%Caso base, la grilla está completa.
 segundaPasada(GrillaIn, PistasFila, _PistasColumna,GrillaIn):-
     length(PistasFila,L),
     grillaCompleta(GrillaIn,L).
 
+%Caso recursivo
 segundaPasada(GrillaIn, PistasFila, PistasColumna,GrillaOut):-
     %%Calculo grilla cautas.
    grillaCautas(GrillaIn,PistasFila,PistasColumna,GrillaAux),(
-           %Si son iguales, asigno el valor de salida.                                                  
+        %Si son iguales, asigno el valor de salida.                                                  
           (grillaIguales(GrillaIn,GrillaAux), GrillaOut = GrillaAux);
-          %Sino, vuelvo a llamar.
+        %Sino, vuelvo a llamar.
           segundaPasada(GrillaAux,PistasFila,PistasColumna,GrillaOut)
    ).
 
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Determina si dos grillas son iguales
+% grillaIguales(Grilla1,Grilla2).
 grillaIguales([], []).
 grillaIguales([Fila1|Subgrilla1], [Fila2|Subgrilla2]):-
       filasIguales(Fila1, Fila2),
       grillaIguales(Subgrilla1, Subgrilla2).
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Determina si dos filas son iguales
+% grillaIguales(Fila1,Fila2).
 filasIguales([], []).
 filasIguales([Elemento1|Subfila1],[Elemento2|Subfila2]):-
       var(Elemento1),
@@ -297,25 +328,29 @@ filasIguales([Elemento1|Subfila1], [Elemento2|Subfila2]):-
       Elemento1 == Elemento2,
       filasIguales(Subfila1, Subfila2).
 
-%IgualesF:
-% Caso base: Vacias, fin.
-% Caso R1: El primer elem de cada una es una variable: [X|Xs], var(X)
-% Despues sigo con las demas.
-% Caso R2: El primer elem, no es variable, X1 == X2
-
-grillaCompleta(_,0):-!.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Determina si una grilla está completa.
+% grillaCompleta(Grilla,Indice).
+grillaCompleta(_,0).
 grillaCompleta(Grilla,Index):-
     I is Index-1,
     getRow(Grilla,I,Row), 
     allAtomico(Row),
     grillaCompleta(Grilla,I).
             
-            
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Determina si todos los elementos de una lista están instanciados.
+% allAtomico(Lista).            
 allAtomico([]).
 allAtomico([X|Xs]):-
 	forall(member(Elem,X), not(isVoid(Elem))),
 	allAtomico(Xs).
 
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Genera una grilla con los movimientos que son correctos
+% grillaCautas(GrillaIN,PistasFilas,PistasColumnas,Out).  
 grillaCautas(GrillaIN,PistasFilas,PistasColumnas,Out):-
     length(PistasFilas,LengthFC),
 	generarFilasCautas(GrillaIN,PistasFilas,GrillasFilasCautas,0,LengthFC),
@@ -324,8 +359,13 @@ grillaCautas(GrillaIN,PistasFilas,PistasColumnas,Out):-
 	generarFilasCautas(Traspuesta,PistasColumnas,GrillasColumnasCautas,0,LengthPC),
     transpose(GrillasColumnasCautas,Out),!.
                  
-                 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Genera una fila con los movimientos que son correctos a partir de una grilla dada.
+% generarFilasCautas(GrillaIN,PistasFilas,Salida,Indice,Longitud).                   
+
+%Caso base:
 generarFilasCautas(_GrillaIN,_Pistas,[],Length,Length).
+%Caso recursivo:
 generarFilasCautas(GrillaIN,Pistas,[RowCauta|GrillaOut],Index,Length):-
     getRow(GrillaIN,Index,Row),
     getClue(Index,Pistas,PistaObtenida),
@@ -335,12 +375,16 @@ generarFilasCautas(GrillaIN,Pistas,[RowCauta|GrillaOut],Index,Length):-
     generarFilasCautas(GrillaIN,Pistas,GrillaOut,I,Length).
     
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Método cáscara el cual a partir de una grilla dada, genera la solución.
+% pasadaFinal(GrillaIN,PistasFilas,PistasColumna,Salida).                   
 
 pasadaFinal(GrillaIn, PistasFila, PistasCol, GrillaOut):-
 	pasadaFinalAux(GrillaIn, PistasFila, PistasCol, [], GrillaOut).
 
-% checkInitCol(Grilla,Length,Length,ColClue,RES).
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Método auxiliar que es utilizado porpasadaFinal(GrillaIN,PistasFilas,PistasColumna,Salida). 
+% pasadaFinalAux(GrillaIN,PistasFilas,PistasColumna,Salida). 
 pasadaFinalAux(_GrillaIn,[],PistasColumna,Acumulado,GrillaOut):-
     length(PistasColumna,LengthCol),
     checkInitCol(Acumulado,0,LengthCol,PistasColumna,CheckColumna),
@@ -348,7 +392,7 @@ pasadaFinalAux(_GrillaIn,[],PistasColumna,Acumulado,GrillaOut):-
     GrillaOut = Acumulado.
 
 pasadaFinalAux([Fila|Resto],[_P|RestoPistas],PistasColumna,Acumulado,GrillaOut):- 
-	forall(member(Elem,Fila), not(isVoid(Elem))),
+	forall(member(Elem,Fila), not(var(Elem))),
     append(Acumulado, [Fila], ListaAux),
     pasadaFinalAux(Resto,RestoPistas, PistasColumna, ListaAux, GrillaOut).
 
@@ -359,7 +403,9 @@ pasadaFinalAux([Fila|Resto], [PrimeraPistaFila|RestoPistasFila], PistasCol, Acum
 
            
 
-%primeraPasada(GrillaIn,PistasFila,PistasColumna,GrillaFinal):-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Método general para la resolución del nonograma.
+% solucion(GrillaIN,PistasFilas,PistasColumna,Salida). 
 solucion(GrillaIn,PistasFila,PistasColumna,GrillaFinal):-
     primeraPasada(GrillaIn,PistasFila,PistasColumna,GrillaPrimeraPasada),
     segundaPasada(GrillaPrimeraPasada, PistasFila, PistasColumna,GrillaSegundaPasada),
@@ -382,7 +428,7 @@ solucion(GrillaIn,PistasFila,PistasColumna,GrillaFinal):-
 %% not(member...
 % \+(member...
 
-%solucion([[_,_,_,_,_,_],
+% init([[_,_,_,_,_,_],
 %         [_,_,_,_,_,_],
 %          [_,_,_,_,_,_],
 %         [_,_,_,_,_,_],
@@ -404,9 +450,3 @@ solucion(GrillaIn,PistasFila,PistasColumna,GrillaFinal):-
  %       [[2], [2,3], [1,2], [2,4], [7], [5,2], [9], [2,5], [2,2], [2]],
   %       [[1,1], [3,3], [5], [1,3], [2,5,1], [9], [8], [2,2], [4], [2]],
    %      GrillaOut).
-
-
-
-
-
-	

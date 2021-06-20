@@ -10,7 +10,7 @@ class Game extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      grid: null, //
+      grid: null,
       rowClues: null,
       colClues: null,
       waiting: false,
@@ -61,12 +61,12 @@ class Game extends React.Component {
             });
           
             const queryS = 'solucion('+grid+','+rowClues+','+colClues+',Solution)'; 
+            console.log(queryS);
             this.pengine.query(queryS, (success, response) => {
               if (success) {
                 this.setState({
                   solution: response['Solution'],
                 });
-              console.log(this.state.solution);
             }
           });
           }
@@ -135,7 +135,7 @@ class Game extends React.Component {
   
 
   render() {
-    if (this.state.grid === null) {
+    if (this.state.grid === null || this.state.solution===null) {
       return null;
     }
     const statusText = this.state.finish ? '¡Felicitaciones!' : 'Seguí jugando';
@@ -177,24 +177,24 @@ class Game extends React.Component {
             </tr>
           </tbody>
         </table>
-        <div class="divPistas">
-            <div class="tituloPistas">
+        <div className="divPistas">
+            <div className="tituloPistas">
               Revelar celda
             </div>
             <input onClick={this.changeShowClue} className="lamp" type="checkbox"></input>
-            <div class="tituloPistas2">
+            <div className="tituloPistas2">
               Revelar tablero
             </div>
-            <div class="button b2" id="button-14">
+            <div className="button b2" id="button-14">
               <input type="checkbox" className="checkbox" onClick={this.changeIsShowingSolution}></input>
-              <div class="knobs">
+              <div className="knobs">
                 <span></span>
               </div>
-              <div class="layer"></div>
+              <div className="layer"></div>
             </div>
         </div>
         <Solution
-          grid={this.state.grid}
+          grid={this.state.solution}
           isShowingSolution = {this.state.isShowingSolution}
         />
         </div>
