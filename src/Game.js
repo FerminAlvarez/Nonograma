@@ -20,12 +20,14 @@ class Game extends React.Component {
       finish: false,
       solution:null,
       showClue: false,
+      isShowingSolution: false,
     };
     this.handleClick = this.handleClick.bind(this);
     this.handlePengineCreate = this.handlePengineCreate.bind(this);
     this.pengine = new PengineClient(this.handlePengineCreate);
     this.changeMode = this.changeMode.bind(this);
     this.changeShowClue = this.changeShowClue.bind(this);
+    this.changeIsShowingSolution = this.changeIsShowingSolution.bind(this);
   }  
   
   handlePengineCreate() {
@@ -74,54 +76,58 @@ class Game extends React.Component {
   }
 
   handleClick(i, j) {
-    if(this.state.finish===false){
-      // No action on click if we are waiting.
-      if (this.state.waiting) {
-        return;
-      }
-      // Build Prolog query to make the move, which will look as follows:
-      // put("#",[0,1],[], [],[["X",_,_,_,_],["X",_,"X",_,_],["X",_,_,_,_],["#","#","#",_,_],[_,_,"#","#","#"]], GrillaRes, FilaSat, ColSat)
-
-      const squaresS = JSON.stringify(this.state.grid).replaceAll('"_"', "_"); // Remove quotes for variables.
-      const rowClues = JSON.stringify(this.state.rowClues);
-      const colClues = JSON.stringify(this.state.colClues);
-      var contenido = null;
-
-      if(!this.state.showClue ===true)
-        contenido = JSON.stringify(this.state.contenido);
-      else{
-        contenido = JSON.stringify(this.state.solution[i][j]);
-      }
-      
-
-
-      const queryS = 'put(' + contenido + ', [' + i + ',' + j + '],' + rowClues + ',' + colClues+ ',' + squaresS + ', GrillaRes, FilaSat, ColSat)';
-      this.setState({
-        waiting: true
-      });
-      this.pengine.query(queryS, (success, response) => {
-        if (success) {
-          const rowStatesAux = this.state.rowStates;
-          rowStatesAux[i] = response['FilaSat'] === 1 ? true : false;
-
-          const colStatesAux = this.state.colStates;
-          colStatesAux[j] = response['ColSat'] === 1 ? true : false;
-          this.checkWin();
-          this.setState({
-            grid: response['GrillaRes'],
-            rowStates : rowStatesAux,
-            colStates : colStatesAux,
-            waiting: false,
-          });
-          
-        } else {
-          this.setState({
-            waiting: false
-          });
+    if(this.state.isShowingSolution === false){
+      if(this.state.finish===false){
+        // No action on click if we are waiting.
+        if (this.state.waiting) {
+          return;
         }
-      });
+        // Build Prolog query to make the move, which will look as follows:
+        // put("#",[0,1],[], [],[["X",_,_,_,_],["X",_,"X",_,_],["X",_,_,_,_],["#","#","#",_,_],[_,_,"#","#","#"]], GrillaRes, FilaSat, ColSat)
+
+        const squaresS = JSON.stringify(this.state.grid).replaceAll('"_"', "_"); // Remove quotes for variables.
+        const rowClues = JSON.stringify(this.state.rowClues);
+        const colClues = JSON.stringify(this.state.colClues);
+        var contenido = null;
+
+        if(!this.state.showClue ===true)
+          contenido = JSON.stringify(this.state.contenido);
+        else{
+          contenido = JSON.stringify(this.state.solution[i][j]);
+        }
+        
+
+
+        const queryS = 'put(' + contenido + ', [' + i + ',' + j + '],' + rowClues + ',' + colClues+ ',' + squaresS + ', GrillaRes, FilaSat, ColSat)';
+        this.setState({
+          waiting: true
+        });
+        this.pengine.query(queryS, (success, response) => {
+          if (success) {
+            const rowStatesAux = this.state.rowStates;
+            rowStatesAux[i] = response['FilaSat'] === 1 ? true : false;
+
+            const colStatesAux = this.state.colStates;
+            colStatesAux[j] = response['ColSat'] === 1 ? true : false;
+            this.checkWin();
+            this.setState({
+              grid: response['GrillaRes'],
+              rowStates : rowStatesAux,
+              colStates : colStatesAux,
+              waiting: false,
+            });
+            
+          } else {
+            this.setState({
+              waiting: false
+            });
+          }
+        });
+      }else{
+        alert("¡Ya ganaste!");
+      }
     }else{
-      alert("¡Ya ganaste!");
+       alert("Tienes que dejar de ver la solución primero.");
     }
   }
 
@@ -165,37 +171,32 @@ class Game extends React.Component {
                         <span className="switch-left"> <div className="square2"></div></span>
                         <span className="switch-right">X</span>
                       </label>
-                      <input onClick={this.changeShowClue} className="l" type="checkbox"></input>
+                      
                   </div>
               </td>
             </tr>
           </tbody>
         </table>
-        <table>
-          <tbody>
-            <tr>
-              <td>
-                <Solution
-                  grid={this.state.grid}
-                  rowClues={this.state.rowClues}
-                  colClues={this.state.colClues}
-                  onClick={(i, j) => this.handleClick(i,j)}
-                />
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <div className="mid">
-                    <label className="rocker">
-                      <input type="checkbox" onClick={this.changeMode}></input>
-                      <span className="switch-left"> <div className="square2"></div></span>
-                      <span className="switch-right">X</span>
-                    </label>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="divPistas">
+            <div class="tituloPistas">
+              Revelar celda
+            </div>
+            <input onClick={this.changeShowClue} className="lamp" type="checkbox"></input>
+            <div class="tituloPistas2">
+              Revelar tablero
+            </div>
+            <div class="button b2" id="button-14">
+              <input type="checkbox" className="checkbox" onClick={this.changeIsShowingSolution}></input>
+              <div class="knobs">
+                <span></span>
+              </div>
+              <div class="layer"></div>
+            </div>
+        </div>
+        <Solution
+          grid={this.state.grid}
+          isShowingSolution = {this.state.isShowingSolution}
+        />
         </div>
     );
   }
@@ -210,6 +211,13 @@ class Game extends React.Component {
     var mode = this.state.showClue === true ? false : true;
     this.setState({
       showClue:mode,
+    });
+  }
+
+  changeIsShowingSolution() {
+    var mode = this.state.isShowingSolution === true ? false : true;
+    this.setState({
+      isShowingSolution:mode,
     });
   }
 
